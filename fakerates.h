@@ -12,5 +12,3 @@ bool isNumeratorMuon (int index, int type = 0);
 
 class TH2F &fakeRate ();
 class TH2F &fakeRateError ();
-class TH2F &fakeRateMuon ();
-class TH2F &fakeRateErrorMuon ();
