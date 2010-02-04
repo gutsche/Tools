@@ -1,10 +1,13 @@
 // -*- C++ -*-
+
+// $Id:$
+
 // for electron fake rates
 bool isFakeable (int i_el);
 double elFakeProb (int i_el, int add_error_times = 0);
 bool isNumeratorElectron (int index, int type = 0);
 
-int elFakeMCCategory(int i_mu);
+int elFakeMCCategory(int i_el);
 
 // for muon fake rates
 bool isFakeableMuon (int i_mu);
