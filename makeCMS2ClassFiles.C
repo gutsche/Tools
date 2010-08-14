@@ -133,6 +133,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     TString branchtitle(branch->GetTitle());
     if(!branchname.BeginsWith("int") && 
        !branchname.BeginsWith("uint") && 
+       !branchname.BeginsWith("bool") && 
        !branchname.BeginsWith("float") &&
        !branchname.BeginsWith("double") &&
        !branchtitle.EndsWith("/F") && 
@@ -199,9 +200,6 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
 	headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
 	headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
 	headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
-	headerf << "\t" << "if(" << Form("%s_branch",aliasname.Data()) << " == 0 ) {" << endl;
-	headerf << "\t" << "cout << \"Branch " << aliasname.Data() << " does not exist.\" << endl;" << endl;
-	headerf << "\t" << "}" << endl;
       }
     }
   }
@@ -218,9 +216,6 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
       headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
       headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
       headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
-      headerf << "\t" << "if(" << Form("%s_branch",aliasname.Data()) << " == 0 ) {" << endl;
-      headerf << "\t" << "cout << \"Branch " << aliasname.Data() << " does not exist.\" << endl;" << endl;
-      headerf << "\t" << "}" << endl;
     }
   }
 
