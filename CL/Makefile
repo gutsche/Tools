@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2010/04/16 19:01:34 jmuelmen Exp $
+# $Id: Makefile,v 1.2 2010/08/14 09:24:38 jmuelmen Exp $
 
 CC = g++
 INCLUDE = -I${CMS2_LOCATION}/NtupleMacros
@@ -71,7 +71,7 @@ linkdef_core.cxx: $(COREHEADERS) linkdef.h
 clean:  
 	rm -f ${CMS2_LOCATION}/NtupleMacros/Tools/*.o ${CMS2_LOCATION}/NtupleMacros/Tools/*.d $(TOOLSLIB) \
 		${CMS2_LOCATION}/NtupleMacros/CORE/*.o ${CMS2_LOCATION}/NtupleMacros/CORE/*.d $(CORELIB) \
-		*.o *.d linkdef_out.* $(LOOPERLIB) \
+		*.o *.d linkdef_*.* $(LOOPERLIB) \
 		$(TABLES) 
 
 # how to make tables
