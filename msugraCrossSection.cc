@@ -13,7 +13,7 @@
 //
 //------------------------------------------------------------------------------
 
-// $Id: msugraCrossSection.cc,v 1.5 2011/08/16 01:52:28 warren Exp $
+// $Id: msugraCrossSection.cc,v 1.6 2011/08/16 23:04:25 warren Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "msugraCrossSection.h"
@@ -30,6 +30,11 @@
 #include <sys/stat.h>
 #include <set>
 #include <string>
+#include "TObjString.h"
+#include "TObjArray.h"
+#include "TFile.h"
+#include <math.h>
+using namespace std;
 
 bool loaded_file = false;
 
