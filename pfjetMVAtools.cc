@@ -1,7 +1,7 @@
 #include <vector>
 #include "Math/VectorUtil.h"
-// #include "./CMS2.h"
-#include "$CMSSW_BASE/src/CMS2/NtupleMacros/CORE/CMS2.h"
+#include "./CMS2.h"
+// #include "$CMSSW_BASE/src/CMS2/NtupleMacros/CORE/CMS2.h"
 
 #include "pfjetMVAtools.h"
 
@@ -37,7 +37,7 @@ vector <Int_t> sortcorrectedjets (const vector <LorentzVector> & corrpfjets)
 
   for( size_t sjeti = 0; sjeti < corrpfjets.size(); sjeti ++ ){//loop over sorted jets
 	for( size_t cjeti = 0; cjeti < corrpfjets.size(); cjeti ++ ){//loop over unsorted jets
-	  if( !(abs( sortedjets.at(sjeti).pt() - corrpfjets.at(cjeti).pt() ) > numeric_limits<float>::epsilon() ) ){
+	  if( !(abs( sortedjets.at(sjeti).pt() - corrpfjets.at(cjeti).pt() ) > 0.1*(numeric_limits<float>::epsilon()) ) ){
 		tempind = cjeti;
 	  }
 	}  
