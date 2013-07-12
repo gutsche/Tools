@@ -2,6 +2,8 @@
 #include "Math/VectorUtil.h"
 #include "$CMSSW_BASE/src/CMS2/NtupleMacros/CORE/CMS2.h"
 
+#include "pfjetMVAtools.h"
+
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 using namespace std;
@@ -16,13 +18,15 @@ using namespace tas;
 //of mva values. Otherwise, if there is no problem with the current set of mva values
 //it will return false, and give you back the original set of mva values.
 
-bool sortByPFJetPt (const LorentzVector &pfjet1, const LorentzVector & pfjet2){
+bool sortByPFJetPt (const LorentzVector &pfjet1, const LorentzVector & pfjet2)
+{
   return pfjet1.pt() > pfjet2.pt();
 }
 
 
 //this function will return the index map of an unsorted jet collection to the sorted collection.
-vector <Int_t> sortcorrectedjets (const vector <LorentzVector> & corrpfjets){
+vector <Int_t> sortcorrectedjets (const vector <LorentzVector> & corrpfjets)
+{
   
   vector <Int_t> indices;
   vector <LorentzVector> sortedjets = corrpfjets;
