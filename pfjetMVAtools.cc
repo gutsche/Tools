@@ -1,5 +1,6 @@
 #include <vector>
 #include "Math/VectorUtil.h"
+// #include "./CMS2.h"
 #include "$CMSSW_BASE/src/CMS2/NtupleMacros/CORE/CMS2.h"
 
 #include "pfjetMVAtools.h"
@@ -59,23 +60,44 @@ bool getGoodMVAs(vector <float> &goodmvas)
 
 	vector <bool> isgoodindex;
 	vector <LorentzVector> cjets;
+	double deta = 0.0;
+	double dphi = 0.0;
+	double dr = 0.0;
 
-	for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
-	  cjets.push_back((double)cms2.pfjets_corL1FastL2L3().at(cjeti) * cms2.pfjets_p4().at(cjeti));
+	if( cms2.evt_isRealData() ){
+	  for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
+		cjets.push_back((double)cms2.pfjets_corL1FastL2L3residual().at(cjeti) * cms2.pfjets_p4().at(cjeti));
+	  }
+	}else{
+	  for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
+		cjets.push_back((double)cms2.pfjets_corL1FastL2L3().at(cjeti) * cms2.pfjets_p4().at(cjeti));
+	  }
 	}
-  
+	
 	vector <Int_t> goodindices = sortcorrectedjets(cjets);
 	for( size_t ucjeti = 0; ucjeti < cms2.pfjets_p4().size(); ucjeti++) {   // uncorrected jets collection                                           
 	  for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
-
+		
 		//buggy method
-		if( abs( cms2.pfjets_area().at(ucjeti) - cms2.pfjets_area().at(goodindices.at(cjeti))) > numeric_limits<float>::epsilon() ) continue;
-		if( fabs( cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta()) > 0.01 ) continue;
-
+		if( cms2.evt_isRealData() ){
+		  if( abs( cms2.pfjets_area().at(ucjeti) - cms2.pfjets_area().at(goodindices.at(cjeti))) > numeric_limits<float>::epsilon() ) continue;
+		  if( fabs( cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3residual().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta()) > 0.01 ) continue;
+		}else{
+		  if( abs( cms2.pfjets_area().at(ucjeti) - cms2.pfjets_area().at(goodindices.at(cjeti))) > numeric_limits<float>::epsilon() ) continue;
+		  if( fabs( cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta()) > 0.01 ) continue;
+		}
+		
 		//fix
-		double deta = cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta();
-		double dphi = acos(cos(cms2.pfjets_p4().at(ucjeti).phi() - (cms2.pfjets_corL1FastL2L3().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).phi()));
-		double dr = sqrt(deta*deta + dphi*dphi);
+		if( cms2.evt_isRealData() ){
+		  deta = cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3residual().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta();
+		  dphi = acos(cos(cms2.pfjets_p4().at(ucjeti).phi() - (cms2.pfjets_corL1FastL2L3residual().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).phi()));
+		  dr = sqrt(deta*deta + dphi*dphi);
+		}else{
+		  deta = cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta();
+		  dphi = acos(cos(cms2.pfjets_p4().at(ucjeti).phi() - (cms2.pfjets_corL1FastL2L3().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).phi()));
+		  dr = sqrt(deta*deta + dphi*dphi);
+		}
+		
 		if (dr > 0.01){
 		  isgoodindex.push_back(false);
 		}else{
