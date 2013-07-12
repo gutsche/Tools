@@ -66,6 +66,9 @@ bool getGoodMVAs(vector <float> &goodmvas, string variable)
   }else if( variable == "full53xmva_frac03"   ){ mva_variable = cms2.pfjets_full53xmva_frac03();
   }else if( variable == "full53xmva_frac04"   ){ mva_variable = cms2.pfjets_full53xmva_frac04();
   }else if( variable == "full53xmva_frac05"   ){ mva_variable = cms2.pfjets_full53xmva_frac05();
+  }else{
+	cout<<"variable not found. Check input. Exiting."<<endl;
+	exit(99);
   }
 
   //if no bug is detected, returns the original collection of the mvas stored in the cms2 ntuple.
