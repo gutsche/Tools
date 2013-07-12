@@ -47,17 +47,35 @@ vector <Int_t> sortcorrectedjets (const vector <LorentzVector> & corrpfjets)
 }
 
 //this is the main function to fix the mva bug
-bool getGoodMVAs(vector <float> &goodmvas)
+bool getGoodMVAs(vector <float> &goodmvas, string variable)
 {
   
+  vector <float> mva_variable;
+  if(       variable == "mvavalue"            ){ mva_variable = cms2.pfjets_mvavalue();
+  }else if( variable == "full5xmvavalue"      ){ mva_variable = cms2.pfjets_full5xmvavalue();
+  }else if( variable == "full53xmvavalue"     ){ mva_variable = cms2.pfjets_full53xmvavalue();
+  }else if( variable == "full53xmva_nvtx"     ){ mva_variable = cms2.pfjets_full53xmva_nvtx();
+  }else if( variable == "full53xmva_d0"       ){ mva_variable = cms2.pfjets_full53xmva_d0();
+  }else if( variable == "full53xmva_dZ"       ){ mva_variable = cms2.pfjets_full53xmva_dZ();
+  }else if( variable == "full53xmva_beta"     ){ mva_variable = cms2.pfjets_full53xmva_beta();
+  }else if( variable == "full53xmva_betaStar" ){ mva_variable = cms2.pfjets_full53xmva_betaStar();
+  }else if( variable == "full53xmva_nCharged" ){ mva_variable = cms2.pfjets_full53xmva_nCharged();
+  }else if( variable == "full53xmva_dRMean"   ){ mva_variable = cms2.pfjets_full53xmva_dRMean();
+  }else if( variable == "full53xmva_frac01"   ){ mva_variable = cms2.pfjets_full53xmva_frac01();
+  }else if( variable == "full53xmva_frac02"   ){ mva_variable = cms2.pfjets_full53xmva_frac02();
+  }else if( variable == "full53xmva_frac03"   ){ mva_variable = cms2.pfjets_full53xmva_frac03();
+  }else if( variable == "full53xmva_frac04"   ){ mva_variable = cms2.pfjets_full53xmva_frac04();
+  }else if( variable == "full53xmva_frac05"   ){ mva_variable = cms2.pfjets_full53xmva_frac05();
+  }
+
   //if no bug is detected, returns the original collection of the mvas stored in the cms2 ntuple.
-  if( cms2.pfjets_p4().size() == cms2.pfjets_full53xmvavalue().size() ) {
-	
-	goodmvas = cms2.pfjets_full53xmvavalue();
+  if( cms2.pfjets_p4().size() == mva_variable.size() ) {
+   
+	goodmvas = mva_variable;
 	return false;
-
+   
   }else{
-
+   
 	vector <bool> isgoodindex;
 	vector <LorentzVector> cjets;
 	double deta = 0.0;
@@ -107,8 +125,8 @@ bool getGoodMVAs(vector <float> &goodmvas)
 	}
 
 	//fill the new mva values
-	for( size_t mvai = 0; mvai < cms2.pfjets_full53xmvavalue().size(); mvai++ ){
-	  if( isgoodindex.at(mvai) ) goodmvas.push_back(cms2.pfjets_full53xmvavalue().at(mvai));	
+	for( size_t mvai = 0; mvai < mva_variable.size(); mvai++ ){
+	  if( isgoodindex.at(mvai) ) goodmvas.push_back(mva_variable.at(mvai));	
 	}
   
 	//still possible that the fix picks up less events than the fix in cmssw
@@ -120,7 +138,7 @@ bool getGoodMVAs(vector <float> &goodmvas)
 	  cout<<"new mva values vector size smaller than pfjets collection size."<<endl;
 	  cout<<"returning old mva collection."<<endl;
 	  goodmvas.clear();
-	  goodmvas = cms2.pfjets_full53xmvavalue();
+	  goodmvas = mva_variable;
 	  return false;
 	}
   }
