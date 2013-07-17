@@ -78,32 +78,26 @@ bool getGoodMVAs(vector <float> &goodmvas, string variable)
 	  }
 	}
 	
-	vector <Int_t> goodindices;
- 	sort(cjets.begin(), cjets.end(), sortByPFJetPt);
-	for( size_t indi = 0; indi < cjets.size(); indi++ ){
-	  goodindices.push_back(cjets.at(indi).second);
-	}
-	
 	for( size_t ucjeti = 0; ucjeti < cms2.pfjets_p4().size(); ucjeti++) {   // uncorrected jets collection                                           
-	  for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
+	  for( size_t cjeti = 0; cjeti < cjets.size(); cjeti++) {   // corrected jets collection                                           
 		
 		//buggy method
 		if( cms2.evt_isRealData() ){
-		  if( abs( cms2.pfjets_area().at(ucjeti) - cms2.pfjets_area().at(goodindices.at(cjeti))) > numeric_limits<float>::epsilon() ) continue;
-		  if( fabs( cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3residual().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta()) > 0.01 ) continue;
+		  if( abs( cms2.pfjets_area().at(ucjeti) - cms2.pfjets_area().at(cjets.at(cjeti).second)) > numeric_limits<float>::epsilon() ) continue;
+		  if( fabs( cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3residual().at(cjets.at(cjeti).second) * cms2.pfjets_p4().at(cjets.at(cjeti).second)).eta()) > 0.01 ) continue;
 		}else{
-		  if( abs( cms2.pfjets_area().at(ucjeti) - cms2.pfjets_area().at(goodindices.at(cjeti))) > numeric_limits<float>::epsilon() ) continue;
-		  if( fabs( cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta()) > 0.01 ) continue;
+		  if( abs( cms2.pfjets_area().at(ucjeti) - cms2.pfjets_area().at(cjets.at(cjeti).second)) > numeric_limits<float>::epsilon() ) continue;
+		  if( fabs( cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3().at(cjets.at(cjeti).second) * cms2.pfjets_p4().at(cjets.at(cjeti).second)).eta()) > 0.01 ) continue;
 		}
 		
 		//fix
 		if( cms2.evt_isRealData() ){
-		  deta = cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3residual().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta();
-		  dphi = acos(cos(cms2.pfjets_p4().at(ucjeti).phi() - (cms2.pfjets_corL1FastL2L3residual().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).phi()));
+		  deta = cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3residual().at(cjets.at(cjeti).second) * cms2.pfjets_p4().at(cjets.at(cjeti).second)).eta();
+		  dphi = acos(cos(cms2.pfjets_p4().at(ucjeti).phi() - (cms2.pfjets_corL1FastL2L3residual().at(cjets.at(cjeti).second) * cms2.pfjets_p4().at(cjets.at(cjeti).second)).phi()));
 		  dr = sqrt(deta*deta + dphi*dphi);
 		}else{
-		  deta = cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).eta();
-		  dphi = acos(cos(cms2.pfjets_p4().at(ucjeti).phi() - (cms2.pfjets_corL1FastL2L3().at(goodindices.at(cjeti)) * cms2.pfjets_p4().at(goodindices.at(cjeti))).phi()));
+		  deta = cms2.pfjets_p4().at(ucjeti).eta() - (cms2.pfjets_corL1FastL2L3().at(cjets.at(cjeti).second) * cms2.pfjets_p4().at(cjets.at(cjeti).second)).eta();
+		  dphi = acos(cos(cms2.pfjets_p4().at(ucjeti).phi() - (cms2.pfjets_corL1FastL2L3().at(cjets.at(cjeti).second) * cms2.pfjets_p4().at(cjets.at(cjeti).second)).phi()));
 		  dr = sqrt(deta*deta + dphi*dphi);
 		}
 		
@@ -115,15 +109,17 @@ bool getGoodMVAs(vector <float> &goodmvas, string variable)
 	  }
 	}
 
-	//fill the new mva values
-	for( size_t mvai = 0; mvai < mva_variable.size(); mvai++ ){
-	  if( isgoodindex.at(mvai) ) goodmvas.push_back(mva_variable.at(mvai));	
+	if( isgoodindex.size() >= mva_variable.size() ){
+	  for( size_t mvai = 0; mvai < mva_variable.size(); mvai++ ){
+		if( isgoodindex.at(mvai) ) goodmvas.push_back(mva_variable.at(mvai));	
+	  }	  
 	}
-  
+	
 	//still possible that the fix picks up less events than the fix in cmssw
 	//This behavior was not seen by me, but just in case this line here will 
 	// prevent the code from crashing and return the original mva collection.
 	if( goodmvas.size() == cms2.pfjets_p4().size() ){
+	  //fill the new mva values
 	  return true;  
 	}else{
 	  cout<<"new mva values vector size smaller than pfjets collection size."<<endl;
