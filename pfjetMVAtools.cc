@@ -78,8 +78,8 @@ bool getGoodMVAs(vector <float> &goodmvas, string variable)
 	  }
 	}
 	
-	for( size_t ucjeti = 0; ucjeti < cms2.pfjets_p4().size(); ucjeti++) {   // uncorrected jets collection                                           
-	  for( size_t cjeti = 0; cjeti < cjets.size(); cjeti++) {   // corrected jets collection                                           
+	for( size_t ucjeti = 0; ucjeti < cms2.pfjets_p4().size(); ucjeti++) {   // uncorrected jets collection      
+	  for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
 		
 		//buggy method
 		if( cms2.evt_isRealData() ){
@@ -122,8 +122,9 @@ bool getGoodMVAs(vector <float> &goodmvas, string variable)
 	  //fill the new mva values
 	  return true;  
 	}else{
-	  cout<<"new mva values vector size smaller than pfjets collection size."<<endl;
-	  cout<<"returning old mva collection."<<endl;
+	  cout<<"new mva values vector size "<<goodmvas.size()<<" different to pfjets collection size "<<cms2.pfjets_p4().size()<<endl;
+	  cout<<"returning old mva collection: "<<variable<<endl;
+	  cout << cms2.evt_dataset().at(0) << " " << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
 	  goodmvas.clear();
 	  goodmvas = mva_variable;
 	  return false;
