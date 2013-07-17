@@ -19,31 +19,9 @@ using namespace tas;
 //of mva values. Otherwise, if there is no problem with the current set of mva values
 //it will return false, and give you back the original set of mva values.
 
-bool sortByPFJetPt (const LorentzVector &pfjet1, const LorentzVector & pfjet2)
+bool sortByPFJetPt (const std::pair <LorentzVector, Int_t> &pfjet1, const std::pair<LorentzVector, Int_t> &pfjet2)
 {
-  return pfjet1.pt() > pfjet2.pt();
-}
-
-
-//this function will return the index map of an unsorted jet collection to the sorted collection.
-vector <Int_t> sortcorrectedjets (const vector <LorentzVector> & corrpfjets)
-{
-  
-  vector <Int_t> indices;
-  vector <LorentzVector> sortedjets = corrpfjets;
-  Int_t tempind = 0;
-
-  sort(sortedjets.begin(), sortedjets.end(), sortByPFJetPt);
-
-  for( size_t sjeti = 0; sjeti < corrpfjets.size(); sjeti ++ ){//loop over sorted jets
-	for( size_t cjeti = 0; cjeti < corrpfjets.size(); cjeti ++ ){//loop over unsorted jets
-	  if( !(abs( sortedjets.at(sjeti).pt() - corrpfjets.at(cjeti).pt() ) > 0.1*(numeric_limits<float>::epsilon()) ) ){
-		tempind = cjeti;
-	  }
-	}  
-	indices.push_back(tempind);
-  }
-  return indices;
+  return pfjet1.first.pt() > pfjet2.first.pt();
 }
 
 //this is the main function to fix the mva bug
@@ -80,22 +58,32 @@ bool getGoodMVAs(vector <float> &goodmvas, string variable)
   }else{
    
 	vector <bool> isgoodindex;
-	vector <LorentzVector> cjets;
+	vector <std::pair <LorentzVector, Int_t> > cjets;
 	double deta = 0.0;
 	double dphi = 0.0;
 	double dr = 0.0;
 
 	if( cms2.evt_isRealData() ){
 	  for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
-		cjets.push_back((double)cms2.pfjets_corL1FastL2L3residual().at(cjeti) * cms2.pfjets_p4().at(cjeti));
+		LorentzVector corrjet = (double)cms2.pfjets_corL1FastL2L3residual().at(cjeti) * cms2.pfjets_p4().at(cjeti);
+		pair <LorentzVector, Int_t> cjetpair = make_pair( corrjet, (Int_t)cjeti ); 
+		cjets.push_back(cjetpair);
 	  }
+	  
 	}else{
 	  for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
-		cjets.push_back((double)cms2.pfjets_corL1FastL2L3().at(cjeti) * cms2.pfjets_p4().at(cjeti));
+		LorentzVector corrjet = (double)cms2.pfjets_corL1FastL2L3().at(cjeti) * cms2.pfjets_p4().at(cjeti);
+		pair <LorentzVector, Int_t> cjetpair = make_pair( corrjet, (Int_t)cjeti ); 
+		cjets.push_back(cjetpair);
 	  }
 	}
 	
-	vector <Int_t> goodindices = sortcorrectedjets(cjets);
+	vector <Int_t> goodindices;
+ 	sort(cjets.begin(), cjets.end(), sortByPFJetPt);
+	for( size_t indi = 0; indi < cjets.size(); indi++ ){
+	  goodindices.push_back(cjets.at(indi).second);
+	}
+	
 	for( size_t ucjeti = 0; ucjeti < cms2.pfjets_p4().size(); ucjeti++) {   // uncorrected jets collection                                           
 	  for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
 		
@@ -135,7 +123,7 @@ bool getGoodMVAs(vector <float> &goodmvas, string variable)
 	//still possible that the fix picks up less events than the fix in cmssw
 	//This behavior was not seen by me, but just in case this line here will 
 	// prevent the code from crashing and return the original mva collection.
-	if( goodmvas.size() >= cms2.pfjets_p4().size() ){
+	if( goodmvas.size() == cms2.pfjets_p4().size() ){
 	  return true;  
 	}else{
 	  cout<<"new mva values vector size smaller than pfjets collection size."<<endl;
