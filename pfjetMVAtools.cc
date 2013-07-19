@@ -77,6 +77,8 @@ bool getGoodMVAs(vector <float> &goodmvas, string variable)
 		cjets.push_back(cjetpair);
 	  }
 	}
+
+	sort(cjets.begin(), cjets.end(), sortByPFJetPt);
 	
 	for( size_t ucjeti = 0; ucjeti < cms2.pfjets_p4().size(); ucjeti++) {   // uncorrected jets collection      
 	  for( size_t cjeti = 0; cjeti < cms2.pfjets_p4().size(); cjeti++) {   // corrected jets collection                                           
